@@ -1,11 +1,13 @@
 package com.enrique7mc.simplenotes;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,8 +16,10 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity
+		implements LoaderManager.LoaderCallbacks<Cursor>{
 	private static final String TAG = MainActivity.class.getSimpleName();
+	private CursorAdapter cursorAdapter;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,16 +27,16 @@ public class MainActivity extends ActionBarActivity {
 
 		insertNote("New note");
 
-		Cursor cursor = getContentResolver().query(NotesProvider.CONTENT_URI,
-				DBOpenHelper.ALL_COLUMNS, null, null, null, null);
-
 		String[] from = {DBOpenHelper.NOTE_TEXT};
 		int[] to = {android.R.id.text1};
-		CursorAdapter cursorAdapter = new SimpleCursorAdapter(this,
-				android.R.layout.simple_list_item_1, cursor, from, to, 0);
+
+		cursorAdapter = new SimpleCursorAdapter(this,
+				android.R.layout.simple_list_item_1, null, from, to, 0);
 
 		ListView list = (ListView) findViewById(android.R.id.list);
 		list.setAdapter(cursorAdapter);
+
+		getLoaderManager().initLoader(0, null, this);
 	}
 
 	private void insertNote(String noteText) {
@@ -59,5 +63,20 @@ public class MainActivity extends ActionBarActivity {
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+		return new CursorLoader(this, NotesProvider.CONTENT_URI, null, null, null, null);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		cursorAdapter.swapCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		cursorAdapter.swapCursor(null);
 	}
 }
