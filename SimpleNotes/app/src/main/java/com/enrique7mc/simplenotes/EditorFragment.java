@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +22,7 @@ import android.widget.Toast;
 /**
  * Created by Enrique on 14/06/2015.
  */
-public class EditorFragment extends Fragment {
+public class EditorFragment extends Fragment implements OnBackPressedListener {
 	private String action;
 	private EditText editor;
 	private String noteFilter;
@@ -49,6 +50,8 @@ public class EditorFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_editor, container, false);
 		editor = (EditText) v.findViewById(R.id.editText);
+
+		((EditorActivity) getActivity()).setOnBackPressedListener(this);
 
 		uri = getArguments().getParcelable(NotesProvider.CONTENT_ITEM_TYPE);
 		if (uri == null) {
@@ -154,5 +157,13 @@ public class EditorFragment extends Fragment {
 				return false;
 			}
 		});
+	}
+
+	@Override
+	public void doBack() {
+		getActivity().getSupportFragmentManager()
+					 .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		finishEditing();
+		Toast.makeText(getActivity(), "Back pressed", Toast.LENGTH_SHORT).show();
 	}
 }
