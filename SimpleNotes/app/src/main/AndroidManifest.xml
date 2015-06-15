@@ -18,10 +18,18 @@
         </activity>
 
         <provider
-            android:authorities="com.enrique7mc.simplenotes.notesprovider"
             android:name=".NotesProvider"
+            android:authorities="com.enrique7mc.simplenotes.notesprovider"
             android:exported="false" />
 
+        <activity
+            android:name=".EditorActivity"
+            android:label="@string/title_activity_editor"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.enrique7mc.simplenotes.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
