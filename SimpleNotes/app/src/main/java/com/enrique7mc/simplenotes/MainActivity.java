@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity
 		implements LoaderManager.LoaderCallbacks<Cursor>{
 	private static final String TAG = MainActivity.class.getSimpleName();
+	private static final int EDITOR_REQUEST_CODE = 1;
 	private CursorAdapter cursorAdapter;
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -114,5 +117,10 @@ public class MainActivity extends ActionBarActivity
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		cursorAdapter.swapCursor(null);
+	}
+
+	public void openEditorForNewNote(View view) {
+		Intent intent = new Intent(this, EditorActivity.class);
+		startActivityForResult(intent, EDITOR_REQUEST_CODE);
 	}
 }
