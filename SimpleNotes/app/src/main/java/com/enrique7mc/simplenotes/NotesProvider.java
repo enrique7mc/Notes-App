@@ -46,7 +46,7 @@ public class NotesProvider extends ContentProvider {
 		}
 
 		return database.query(DBOpenHelper.TABLE_NOTES, DBOpenHelper.ALL_COLUMNS, selection,
-				null, null, null, DBOpenHelper.NOTE_CREATED + " DESC");
+				selectionArgs, null, null, DBOpenHelper.NOTE_CREATED + " DESC");
 	}
 
 	@Override
