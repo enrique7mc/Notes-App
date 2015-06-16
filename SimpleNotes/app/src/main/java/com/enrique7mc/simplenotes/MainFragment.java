@@ -71,6 +71,9 @@ public class MainFragment extends Fragment
 			}
 		});
 
+		View empty = v.findViewById(R.id.empty);
+		list.setEmptyView(empty);
+
 		return v;
 	}
 
