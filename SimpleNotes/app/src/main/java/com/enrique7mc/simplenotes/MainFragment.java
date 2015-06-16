@@ -15,16 +15,21 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import at.markushi.ui.CircleButton;
 
@@ -35,9 +40,10 @@ public class MainFragment extends Fragment
 		implements LoaderManager.LoaderCallbacks<Cursor>{
 	private CursorAdapter cursorAdapter;
 	private at.markushi.ui.CircleButton newButton;
-	private static final String TAG = MainActivity.class.getSimpleName();
+	private static final String TAG = MainFragment.class.getSimpleName();
 	public static final int EDITOR_REQUEST_CODE = 1;
 	private String queryFilter;
+	private ListView list;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,9 +55,23 @@ public class MainFragment extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_main, container, false);
+		configureListView(v);
 
+		newButton = (CircleButton) v.findViewById(R.id.newButton);
+		newButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Intent intent = new Intent(getActivity(), EditorActivity.class);
+				startActivityForResult(intent, EDITOR_REQUEST_CODE);
+			}
+		});
+
+		return v;
+	}
+
+	private void configureListView(View v) {
 		cursorAdapter = new NotesCursorAdapter(getActivity(), null, 0);
-		ListView list = (ListView) v.findViewById(android.R.id.list);
+		list = (ListView) v.findViewById(android.R.id.list);
 		list.setAdapter(cursorAdapter);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -62,19 +82,13 @@ public class MainFragment extends Fragment
 				startActivityForResult(intent, EDITOR_REQUEST_CODE);
 			}
 		});
-		newButton = (CircleButton) v.findViewById(R.id.newButton);
-		newButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Intent intent = new Intent(getActivity(), EditorActivity.class);
-				startActivityForResult(intent, EDITOR_REQUEST_CODE);
-			}
-		});
 
 		View empty = v.findViewById(R.id.empty);
 		list.setEmptyView(empty);
 
-		return v;
+		list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+		list.setMultiChoiceModeListener(new MultiChoiceListenerImpl());
+		Log.d(TAG, "END configureListView");
 	}
 
 	@Override
@@ -144,6 +158,34 @@ public class MainFragment extends Fragment
 				.show();
 	}
 
+	private void deleteSelectedNotes(final List<Long> ids) {
+		DialogInterface.OnClickListener dialogClickListener =
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int button) {
+						if (button == DialogInterface.BUTTON_POSITIVE) {
+							for (long i : ids) {
+								String noteFilter = DBOpenHelper.NOTE_ID + "=" + i;
+								getActivity().getContentResolver().
+										delete(NotesProvider.CONTENT_URI, noteFilter, null);
+							}
+							restartLoader();
+
+							Toast.makeText(getActivity(),
+									getString(R.string.notes_deleted),
+									Toast.LENGTH_SHORT).show();
+						}
+					}
+				};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(getString(R.string.are_you_sure))
+				.setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+				.setNegativeButton(getString(android.R.string.no), null)
+				.show();
+	}
+
+
 	private void insertSampleData() {
 		insertNote("Simple note");
 		insertNote("Multiline\nnote");
@@ -189,6 +231,57 @@ public class MainFragment extends Fragment
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == EDITOR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
 			restartLoader();
+		}
+	}
+
+	private class MultiChoiceListenerImpl implements AbsListView.MultiChoiceModeListener{
+
+		public MultiChoiceListenerImpl() {
+			Log.d(TAG, "MultiChoiceListenerImpl ctor");
+		}
+
+		@Override
+		public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+			// not used
+		}
+
+		@Override
+		public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+			MenuInflater inflater = actionMode.getMenuInflater();
+			inflater.inflate(R.menu.note_list_item_context, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+			// not used
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+			Log.d(TAG, "onActionItemClicked");
+			switch (menuItem.getItemId()){
+				case R.id.menu_item_delete_note:
+					List<Long> ids = new ArrayList<>();
+					for (int i = cursorAdapter.getCount() - 1; i >= 0; i--) {
+						if (list.isItemChecked(i)) {
+							Log.d(TAG, cursorAdapter.getItem(i).toString() + " " +
+									cursorAdapter.getItemId(i));
+							ids.add(cursorAdapter.getItemId(i));
+						}
+					}
+					deleteSelectedNotes(ids);
+					actionMode.finish();
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode actionMode) {
+			// not used
 		}
 	}
 }

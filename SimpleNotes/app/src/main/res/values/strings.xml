@@ -15,4 +15,5 @@
     <string name="search_title">Search note</string>
     <string name="action_share">Share</string>
     <string name="send_note">Send note</string>
+    <string name="notes_deleted">Notes deleted</string>
 </resources>
