@@ -12,4 +12,7 @@
     <string name="note_deleted">Note deleted</string>
     <string name="note">Note</string>
     <string name="enter_note_here">Enter note here</string>
+    <string name="search_title">Search note</string>
+    <string name="action_share">Share</string>
+    <string name="send_note">Send note</string>
 </resources>

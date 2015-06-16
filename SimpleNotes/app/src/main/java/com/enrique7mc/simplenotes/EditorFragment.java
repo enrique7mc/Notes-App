@@ -92,9 +92,20 @@ public class EditorFragment extends Fragment implements OnBackPressedListener {
 				deleteNote();
 				getActivity().finish();
 				break;
+			case R.id.action_share:
+				shareNote();
+				break;
 		}
 
 		return true;
+	}
+
+	private void shareNote() {
+		Intent i = new Intent(Intent.ACTION_SEND);
+		i.setType("text/plain");
+		i.putExtra(Intent.EXTRA_TEXT, editor.getText().toString());
+		i = Intent.createChooser(i, getString(R.string.send_note));
+		startActivity(i);
 	}
 
 	private void deleteNote() {
@@ -164,6 +175,5 @@ public class EditorFragment extends Fragment implements OnBackPressedListener {
 		getActivity().getSupportFragmentManager()
 					 .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 		finishEditing();
-		Toast.makeText(getActivity(), "Back pressed", Toast.LENGTH_SHORT).show();
 	}
 }
