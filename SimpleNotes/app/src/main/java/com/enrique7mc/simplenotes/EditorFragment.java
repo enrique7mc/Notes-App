@@ -153,24 +153,6 @@ public class EditorFragment extends Fragment implements OnBackPressedListener {
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-
-		getView().setFocusableInTouchMode(true);
-		getView().requestFocus();
-		getView().setOnKeyListener(new View.OnKeyListener() {
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-					finishEditing();
-					return true;
-				}
-				return false;
-			}
-		});
-	}
-
-	@Override
 	public void doBack() {
 		getActivity().getSupportFragmentManager()
 					 .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
