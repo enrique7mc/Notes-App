@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class MainFragment extends Fragment
 	private at.markushi.ui.CircleButton newButton;
 	private static final String TAG = MainActivity.class.getSimpleName();
 	public static final int EDITOR_REQUEST_CODE = 1;
+	private String queryFilter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,27 @@ public class MainFragment extends Fragment
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.menu_main, menu);
+
+		MenuItem item = menu.findItem(R.id.action_search);
+		SearchView sv = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
+		MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
+				| MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+		MenuItemCompat.setActionView(item, sv);
+		sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				Log.d("Search Submit", query);
+				QueryDb(query);
+				return false;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				Log.d("Search", newText);
+				QueryDb(newText);
+				return false;
+			}
+		});
 	}
 
 	@Override
@@ -150,6 +173,13 @@ public class MainFragment extends Fragment
 	@Override
 	public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
 		cursorAdapter.swapCursor(null);
+	}
+
+	private void QueryDb(String query) {
+		queryFilter = String.format("%s LIKE ?", DBOpenHelper.NOTE_TEXT);
+		Cursor cursor = getActivity().getContentResolver().query(NotesProvider.CONTENT_URI,
+				DBOpenHelper.ALL_COLUMNS, queryFilter, new String[]{"%" + query + "%"}, null);
+		cursorAdapter.swapCursor(cursor);
 	}
 
 	@Override
