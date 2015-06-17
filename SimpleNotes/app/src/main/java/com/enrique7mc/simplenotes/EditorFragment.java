@@ -59,6 +59,7 @@ public class EditorFragment extends Fragment implements OnBackPressedListener {
 			getActivity().setTitle(getString(R.string.new_note));
 		} else {
 			action = Intent.ACTION_EDIT;
+			getActivity().setTitle(getString(R.string.edit_note));
 			noteFilter = DBOpenHelper.NOTE_ID + "=" + uri.getLastPathSegment();
 
 			Cursor cursor = getActivity().getContentResolver().query(uri, DBOpenHelper.ALL_COLUMNS,

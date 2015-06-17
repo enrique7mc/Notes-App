@@ -16,4 +16,5 @@
     <string name="action_share">Compartir</string>
     <string name="send_note">Enviar nota</string>
     <string name="notes_deleted">Notas borradas</string>
+    <string name="edit_note">Editar nota</string>
 </resources>
