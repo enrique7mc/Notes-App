@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Notas Simples</string>
+    <string name="create_sample_data">Crear datos de prueba</string>
+    <string name="delete_all_notes">Borrar todas las notas</string>
+    <string name="are_you_sure">¿Estás seguro?</string>
+    <string name="all_deleted">Todas las notas borradas</string>
+    <string name="title_activity_editor">EditorActivity</string>
+    <string name="new_note">Nueva Nota</string>
+    <string name="note_updated">Nota actualizada</string>
+    <string name="action_delete">Borrar</string>
+    <string name="note_deleted">Nota borrada</string>
+    <string name="note">Nota</string>
+    <string name="enter_note_here">Ingresa una nota</string>
+    <string name="search_title">Buscar nota</string>
+    <string name="action_share">Compartir</string>
+    <string name="send_note">Enviar nota</string>
+    <string name="notes_deleted">Notas borradas</string>
+</resources>
