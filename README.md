@@ -7,7 +7,7 @@ Material Design
 
 This application lets you save text notes from newer to older, it stores the data in a SQL Lite database
 
-![alt tag](http://20.postimg.org/ctaexx3z1/Notes_1.png)
+![alt tag](http://s20.postimg.org/ctaexx3z1/Notes_1.png)
 
 Implements a fragment based User Interface
 
